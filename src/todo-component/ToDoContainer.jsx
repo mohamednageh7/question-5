@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { setTodos, setCompleted, setInactiveItem } from '../store/task';
+import PropTypes from 'prop-types';
 import TaskDataViews from './TaskDataViews';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -13,30 +16,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const createData = (task, done) => {
-  return { task, done };
-};
-
-const ToDoContainer = () => {
+const ToDoContainer = ({
+  todos,
+  inactiveItem,
+  completed,
+  setTodos,
+  setCompleted,
+  setInactiveItem,
+}) => {
   const classes = useStyles();
-  const [todos, setTodos] = useState([
-    createData('playing', false),
-    createData('study', false),
-    createData('watch moves', false),
-    createData('go with friend', false),
-    createData('talk to familt', false),
-    createData('go to school', false),
-  ]);
-
   const [inputValue, setInputValue] = useState('');
-  const [inactiveItem, setInactiveItem] = useState(null);
-  const [completed, setCompleted] = useState([]);
   const [viewAll, setViewAll] = useState(false);
   const [viewActive, setViewActive] = useState(false);
   const [viewCompleted, setViewCompleted] = useState(false);
 
   const showActive = () => {
-    return inactiveItem === null ? todos.length : inactiveItem.length;
+    return todos.length - completed.length;
   };
   const handleInput = (e) => {
     setInputValue(e.target.value);
@@ -44,7 +39,9 @@ const ToDoContainer = () => {
   const handleAddTask = (e) => {
     if (e.keyCode === 13) {
       let newTodo = [...todos];
+      let active = newTodo.filter((item) => item.done === false);
       setTodos([{ task: inputValue, done: false }, ...newTodo]);
+      setInactiveItem([{ task: inputValue, done: false }, ...active]);
       setInputValue('');
     }
   };
@@ -110,16 +107,7 @@ const ToDoContainer = () => {
               ? completed
               : todos
             ).map((todo, index) => (
-              <TaskDataViews
-                key={`${todo} ${index}`}
-                todo={todo}
-                todos={todos}
-                setTodos={setTodos}
-                inactiveItem={inactiveItem}
-                setInactiveItem={setInactiveItem}
-                completed={completed}
-                setCompleted={setCompleted}
-              />
+              <TaskDataViews key={`${todo} ${index}`} todo={todo} />
             ))}
           </Grid>
           <Grid item sm style={{ width: '45em', marginTop: '2em' }}>
@@ -175,4 +163,22 @@ const ToDoContainer = () => {
   );
 };
 
-export default ToDoContainer;
+ToDoContainer.propTypes = {
+  todos: PropTypes.array.isRequired,
+  completed: PropTypes.array,
+  setTodos: PropTypes.func.isRequired,
+  setCompleted: PropTypes.func.isRequired,
+  setInactiveItem: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  todos: state.task.todos,
+  inactiveItem: state.task.inactiveItem,
+  completed: state.task.completed,
+});
+
+export default connect(mapStateToProps, {
+  setTodos,
+  setCompleted,
+  setInactiveItem,
+})(ToDoContainer);

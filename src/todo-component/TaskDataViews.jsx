@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { setTodos, setCompleted, setInactiveItem } from '../store/task';
+import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,11 +21,10 @@ const useStyles = makeStyles((theme) => ({
 const TaskDataViews = ({
   todo,
   todos,
+  completed,
   setTodos,
-  inactiveItem,
   setInactiveItem,
   setCompleted,
-  completed,
 }) => {
   const classes = useStyles();
   const [showIcon, setShowIcon] = useState(false);
@@ -65,7 +67,7 @@ const TaskDataViews = ({
   };
   const handleDeleteTask = () => {
     let newTodos = [...todos];
-    let active;
+    let active = null;
     let complete = [...completed];
     let taskValue = todo.task;
     newTodos = newTodos.filter((item) => item.task !== todo.task);
@@ -75,7 +77,7 @@ const TaskDataViews = ({
     complete.length > 0 ? setCompleted([...complete]) : setCompleted([]);
     active = newTodos.filter((item) => item.done === false);
     setTodos([...newTodos]);
-    setInactiveItem(active);
+    active !== null && setInactiveItem(active);
   };
   return (
     <Grid
@@ -155,4 +157,22 @@ const TaskDataViews = ({
   );
 };
 
-export default TaskDataViews;
+TaskDataViews.propTypes = {
+  todos: PropTypes.array.isRequired,
+  completed: PropTypes.array,
+  setTodos: PropTypes.func.isRequired,
+  setCompleted: PropTypes.func.isRequired,
+  setInactiveItem: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  todos: state.task.todos,
+  inactiveItem: state.task.inactiveItem,
+  completed: state.task.completed,
+});
+
+export default connect(mapStateToProps, {
+  setTodos,
+  setCompleted,
+  setInactiveItem,
+})(TaskDataViews);
