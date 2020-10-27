@@ -97,14 +97,17 @@ const TaskDataViews = ({
         >
           <Grid item style={{ marginTop: '0.5em' }}>
             <IconButton
+              disabled={todo.done}
               style={{ alignSelf: 'center' }}
               onClick={handleSelectItem}
             >
-              <CheckCircleOutlineIcon htmlColor={showIcon ? 'green' : '#fff'} />
+              <CheckCircleOutlineIcon
+                htmlColor={showIcon && !todo.done ? 'green' : '#fff'}
+              />
             </IconButton>
           </Grid>
           <Grid item>
-            {textForm ? (
+            {textForm && !todo.done ? (
               <FormControl fullWidth className={classes.margin}>
                 <Input
                   id='todo-add'
