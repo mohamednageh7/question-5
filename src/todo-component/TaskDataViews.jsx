@@ -65,6 +65,7 @@ const TaskDataViews = ({
   };
   const handleDeleteTask = () => {
     let newTodos = [...todos];
+    let active;
     let complete = [...completed];
     let taskValue = todo.task;
     newTodos = newTodos.filter((item) => item.task !== todo.task);
@@ -72,7 +73,9 @@ const TaskDataViews = ({
     complete =
       complete.length > 0 && complete.filter((item) => item.task !== taskValue);
     complete.length > 0 ? setCompleted([...complete]) : setCompleted([]);
+    active = newTodos.filter((item) => item.done === false);
     setTodos([...newTodos]);
+    setInactiveItem(active);
   };
   return (
     <Grid

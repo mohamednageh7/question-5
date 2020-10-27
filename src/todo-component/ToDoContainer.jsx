@@ -35,7 +35,6 @@ const ToDoContainer = () => {
   const [viewActive, setViewActive] = useState(false);
   const [viewCompleted, setViewCompleted] = useState(false);
 
-  console.log(inactiveItem);
   const showActive = () => {
     return inactiveItem === null ? todos.length : inactiveItem.length;
   };
@@ -69,7 +68,6 @@ const ToDoContainer = () => {
   const handleClearCompleted = () => {
     let newTodos = [...todos];
     newTodos = newTodos.filter((item) => item.done === false);
-    // console.log(todos);
     setTodos([...newTodos]);
     setCompleted([]);
   };
